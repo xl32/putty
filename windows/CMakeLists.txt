@@ -130,9 +130,16 @@ target_link_libraries(putty-embed
   utils urlhack
   ${platform_libraries})
 set_target_properties(putty-embed PROPERTIES PREFIX "")
+if(MINGW)
+  # no libgcc DLL dependency next to the host exe
+  target_link_options(putty-embed PRIVATE -static-libgcc)
+endif()
 
 # Run as: test_embed putty-embed.dll  (loads the DLL dynamically)
 add_executable(test_embed test/test_embed.c)
+if(MINGW)
+  target_link_options(test_embed PRIVATE -municode -static-libgcc)
+endif()
 
 add_executable(puttytel
   window.c
